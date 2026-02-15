@@ -1,0 +1,60 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>音声感情デモ</title>
+  <style>
+    #output { font-size: 20px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <h2>音声感情デモ</h2>
+  <input type="file" id="audioInput">
+  <div id="output"></div>
+
+  <script>
+    const audioInput = document.getElementById('audioInput');
+    const output = document.getElementById('output');
+
+    const emotionColor = (emotion) => {
+      if (emotion.joy >= 0.5) return 'orange';
+      if (emotion.anger >= 0.5) return 'red';
+      if (emotion.sadness >= 0.5) return 'blue';
+      return 'black';
+    }
+
+    const fontSize = (emotion) => {
+      // 声量や喜びで文字サイズ調整（デモ用）
+      let base = 20;
+      if (emotion.joy) base += emotion.joy * 10;
+      if (emotion.anger) base += emotion.anger * 10;
+      if (emotion.sadness) base -= emotion.sadness * 5;
+      return `${base}px`;
+    }
+
+    audioInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch('http://127.0.0.1:8000/analyze/', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+
+      output.innerHTML = '';
+      data.transcription.forEach(seg => {
+        const span = document.createElement('span');
+        span.textContent = seg.text + ' ';
+        span.style.color = emotionColor(seg.emotion);
+        span.style.fontSize = fontSize(seg.emotion);
+        output.appendChild(span);
+      });
+    });
+  </script>
+</body>
+</html>
