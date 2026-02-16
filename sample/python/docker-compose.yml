@@ -9,3 +9,18 @@ services:
     volumes:
       - ./tmp_emotion_model:/app/tmp_emotion_model
     restart: always
+    depends_on:
+      - speechbrain
+
+  speechbrain:
+    build:
+      context: .
+      dockerfile: Dockerfile.speechbrain
+    container_name: speechbrain_api
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./tmp_emotion_model:/workspace/tmp_emotion_model
+      - ./:/workspace
+    restart: unless-stopped
+    command: ["uvicorn", "speechbrain_service:app", "--host", "0.0.0.0", "--port", "8001"]

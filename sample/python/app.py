@@ -68,44 +68,50 @@ def analyze_audio_features(y, sr):
     return volume, pitch
 
 # -----------------------------
-# 感情認識（ヒューリスティック版）
+# 感情認識（SpeechBrain サービスへ委譲。未接続時はローカルヒューリスティックにフォールバック）
 # -----------------------------
-def analyze_emotion(path):
-    """
-    簡易的な感情認識：音量とピッチの特徴を使用
-    - 高ピッチ + 高音量 -> happy (joy)
-    - 高ピッチ + 普通音量 -> happy
-    - 低ピッチ + 低音量 -> sad
-    - その他 -> neutral
-    """
+import requests
+
+SPEECHBRAIN_URL = os.environ.get("SPEECHBRAIN_URL", "http://speechbrain:8001/classify/")
+
+
+def _local_emotion_heuristic(path):
     y, sr = librosa.load(path, sr=16000)
-    
-    # 音量
     volume = float(np.abs(y).mean())
-    
-    # ピッチ
     pitches, _ = librosa.piptrack(y=y, sr=sr)
     pitch_values = pitches[pitches > 0]
     pitch = float(np.mean(pitch_values)) if len(pitch_values) > 0 else 0.0
-    
-    # 簡易ロジック
+
     label = "neutral"
     confidence = 0.5
-    
-    if pitch > 150 and volume > 0.02:  # 高ピッチ + 高音量
+    if pitch > 150 and volume > 0.02:
         label = "happy"
-        confidence = 0.7
-    elif pitch > 150:  # 高ピッチ
+        confidence = 0.8
+    elif pitch > 150:
         label = "happy"
         confidence = 0.6
-    elif pitch < 100 and volume < 0.01:  # 低ピッチ + 低音量
+    elif pitch < 100 and volume < 0.01:
         label = "sad"
         confidence = 0.6
-    else:
-        label = "neutral"
-        confidence = 0.5
-    
     return label, confidence
+
+
+def analyze_emotion(path):
+    """Try SpeechBrain service first; on error use local heuristic."""
+    try:
+        with open(path, "rb") as fh:
+            files = {"file": (os.path.basename(path), fh, "audio/wav")}
+            resp = requests.post(SPEECHBRAIN_URL, files=files, timeout=60)
+        if resp.status_code == 200:
+            j = resp.json()
+            print(f"SpeechBrain service response: {j}")
+            return j.get("label", "neutral"), float(j.get("confidence", 0.5))
+        else:
+            print(f"SpeechBrain service error: {resp.status_code} {resp.text}")
+            return _local_emotion_heuristic(path)
+    except Exception:
+        print("SpeechBrain service not available, using local heuristic.")
+        return _local_emotion_heuristic(path)
 
 # ヘルパー：ラベル -> デモ表示用スコア（joy/anger/sadness）
 def map_emotion_label_to_scores(label: str, confidence: float):

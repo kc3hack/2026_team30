@@ -59,14 +59,15 @@ Docker と Docker Compose がインストール済みの状態で実行：
 # フォルダに移動
 cd sample/python
 
-# Docker コンテナをビルド & 起動
+# Docker コンテナをビルド & 起動（2サービス: api + speechbrain）
 docker compose up --build -d
 
 # 起動完了確認
 docker compose ps
 
 # ブラウザで以下にアクセス
-# http://localhost:8000
+# http://localhost:8000  （フロントエンド）
+# SpeechBrain API: http://localhost:8001/health
 ```
 
 ### 方法2: ローカル venv（開発用）vertion違いで動かない可能性あり
@@ -102,6 +103,12 @@ uvicorn app:app --reload --host 0.0.0.0 --port 8000
 
 1. **ブラウザで http://localhost:8000 にアクセス**
    - `index.html` の UI が表示されます
+
+## 🏗 サービス構成（重要）
+- `api` (ポート 8000) : フロントエンド + 文字起こし、音声解析を提供します。
+- `speechbrain` (ポート 8001) : SpeechBrain を利用した感情分類を担当するマイクロサービス。
+
+`api` は内部で `http://speechbrain:8001/classify/` に POST して感情を取得します（Docker Compose 内のサービス名で到達）。
 
 2. **音声ファイルをアップロード**
    - WAV形式の音声ファイルを選択
