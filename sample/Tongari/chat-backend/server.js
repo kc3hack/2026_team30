@@ -18,6 +18,10 @@ app.post("/api/chat",async(req,res) =>{
     }
 });
 
+app.get("/api/test",(req,res) => {
+    res.json({message:"Nodeから来ました"});
+});
+
 app.listen(3001,() => {
     console.log("Server running on port 3001");
 });

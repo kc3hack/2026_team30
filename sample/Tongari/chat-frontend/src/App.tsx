@@ -3,9 +3,25 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
+//ReactでAPIを呼び出すためにaxiosをインポート
+import axios from 'axios';
+
 function App() {
   const [count, setCount] = useState(0)
+  
+  //APIからのレスポンスを保存するためのstate
+  const [message,setMessage] = useState("");
 
+  //APIを呼び出す関数
+  const fetchMessage = async () => {
+    try{
+      const res = await axios.get("http://localhost:3001/api/test");
+      setMessage(res.data.message); //レスポンスからmessageをstateに保存
+    }catch(err){
+      console.error(err);
+    }
+  };
+ 
   return (
     <>
       <div>
@@ -28,7 +44,14 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+      
+      <div>
+        <h1>React+Nodeの接続テスト</h1>
+        <button onClick={fetchMessage}>サーバから取得</button>
+        <p>{message}</p>
+      </div>
     </>
+
   )
 }
 
