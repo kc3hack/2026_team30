@@ -1,0 +1,13 @@
+venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.git
+.gitignore
+tmp_emotion_model
+.cache
+.env
+node_modules
+*.wav
+*.mp3
