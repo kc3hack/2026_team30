@@ -44,36 +44,41 @@ transcript_response = requests.post(
     json=data,
     headers=headers
 )
-print("ステータス:", transcript_response.status_code)
-print("レスポンス:", transcript_response.json())
 
-transcript_id = transcript_response.json()["id"]
-polling_url = f"https://api.assemblyai.com/v2/transcript/{transcript_id}"
 
-# ===============================
-# ③ ポーリング
-# ===============================
+response_json = transcript_response.json()
+print("文字起こし開始レスポンス:", response_json)
+
+if "id" not in response_json:
+    print("エラー:", response_json)
+    exit()
+
+transcript_id = response_json["id"]
+
 while True:
-    polling_response = requests.get(polling_url, headers=headers)
-    result = polling_response.json()
+    polling = requests.get(
+        f"https://api.assemblyai.com/v2/transcript/{transcript_id}",
+        headers=headers
+    )
 
-    if result["status"] == "completed":
+    result = polling.json()
+    status = result["status"]
 
-        print("\n🗣 話者ごとの発話:")
+    print("ステータス:", status)
 
-        for utterance in result["utterances"]:
-            print(
-                f"Speaker {utterance['speaker']} : {utterance['text']}"
-            )
-
+    if status == "completed":
         break
-
-    elif result["status"] == "error":
-        raise Exception(result["error"])
+    elif status == "error":
+        print("エラー:", result)
+        exit()
 
     time.sleep(3)
 
-# 🔥 utterancesを取得
+print("\n========== 文字起こし結果 ==========\n")
+
+# =========================
+# ④ 話者単位出力
+# =========================
 utterances = result["utterances"]
 
 for u in utterances:
@@ -82,6 +87,49 @@ for u in utterances:
     speaker = u["speaker"]
     text = u["text"]
 
-    print(f"[{start:.2f}s - {end:.2f}s] Speaker {speaker}:")
+    print(f"[{start:.2f}s - {end:.2f}s] Speaker {speaker}")
     print(text)
     print()
+
+# =========================
+# ⑤ 単語単位出力
+# =========================
+print("\n========== 単語単位 ==========\n")
+
+words = result["words"]
+
+for w in words:
+    start = w["start"] / 1000
+    end = w["end"] / 1000
+    print(f"[{start:.2f}s - {end:.2f}s] {w['text']}")
+
+# =========================
+# ⑥ 無音でセグメント分割（0.7秒以上）
+# =========================
+print("\n========== 無音分割セグメント ==========\n")
+
+segments = []
+current = []
+prev_end = None
+
+for w in words:
+    if prev_end and (w["start"] - prev_end) > 700:
+        segments.append(current)
+        current = []
+
+    current.append(w)
+    prev_end = w["end"]
+
+if current:
+    segments.append(current)
+
+for seg in segments:
+    start = seg[0]["start"] / 1000
+    end = seg[-1]["end"] / 1000
+    text = "".join([w["text"] for w in seg])
+
+    print(f"[{start:.2f}s - {end:.2f}s]")
+    print(text)
+    print()
+
+print("完了 🚀")
