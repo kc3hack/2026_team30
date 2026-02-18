@@ -27,6 +27,8 @@ function Chat() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunks = useRef<Blob[]>([]);
 
+  
+
   // ===== テキスト送信 =====
   const sendMessage = () => {
     if (input.trim() === "") return;
@@ -92,7 +94,7 @@ function Chat() {
 
   return (
     <div className="chat-container">
-      <h1>チャットアプリ</h1>
+      <h1>チャット</h1>
 
       {/* ===== チャット表示 ===== */}
       <div className="chat-box">
