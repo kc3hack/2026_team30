@@ -36,7 +36,7 @@ export const sendAudioToServer = async (): Promise<string | null> => {
             },
         });
 
-        console.log("サーバからのレスポンス:", response.data);
+        console.log("response:", response.data);
         
         // JSONレスポンスからテキストを取得して返す
         if (response.data && response.data.text) {
