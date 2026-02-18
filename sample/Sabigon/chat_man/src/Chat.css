@@ -149,3 +149,11 @@ html, body, #root {
   margin: 0;
 }
 
+.rich-input{
+  min-height:40px;
+  padding:10px;
+  border:1px solid #444;
+  border-radius:8px;
+  background:#0f172a;
+  color:white;
+}
