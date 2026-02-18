@@ -1,0 +1,10 @@
+product
+    --backend
+        --docker-compose
+        --Dockerfile
+    --frontend
+        --docker-compose
+        --Dockerfile
+    --emotion-api
+        --docker-compose
+        --Dockerfile
