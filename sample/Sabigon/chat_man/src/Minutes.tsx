@@ -22,7 +22,7 @@ function Minutes() {
         onChange={(e) => setText(e.target.value)}
       />
 
-      <button onClick={() => navigate("/")}>←ホーム戻る</button>
+      <button onClick={() => navigate("/Home")}>←ホーム戻る</button>
     </div>
   );
 }

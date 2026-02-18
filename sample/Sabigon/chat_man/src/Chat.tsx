@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import "./App.css";
+import "./Chat.css";
 import { useNavigate } from "react-router-dom";
 
 
@@ -157,7 +157,7 @@ function Chat() {
           <button onClick={stopRecording}>■</button>
         )}
       </div>
-      <button onClick={()=>navigate("/")}>←戻る</button>
+      <button onClick={()=>navigate("/Home")}>←戻る</button>
     </div>
   );
 }
