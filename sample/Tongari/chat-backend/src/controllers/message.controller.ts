@@ -4,6 +4,8 @@ import multer from "multer";
 import { createFromAudio } from "../services/message.service";
 import {getChatHistory} from "../services/message.service";
 
+import { ReactResponseAudioDTO } from "../dto/react.dto";
+
 //UUID生成
 const upload = multer({ dest: "uploads/" });
 
@@ -14,7 +16,7 @@ export const uploadMiddleware = upload.single("file");
 export async function createAudioMessage(
   req: Request,
   res: Response
-) {   
+) {
   try {
     const { senderId, receiverId } = req.body;
     //reqのうけとり->service(createFromAudio)の呼び出し
@@ -49,5 +51,28 @@ export async function getMessages(
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Failed to retrieve messages" });
+    }
+  }
+
+  //オーディオのメッセージが入力された場合
+  export async function sendAudioMessage(req:Request,res:Response){
+    try{
+      const body:ReactResponseAudioDTO = req.body;
+
+      if(!req.file){
+        return res.status(400).json({error:"Audio file required"});
+      }
+
+      const message = await createFromAudio(
+        body.senderId,
+        body.receiverId,
+        req.file.path
+      );
+
+      res.json(message);
+
+    }catch(err){
+      console.error(err);
+      res.status(500).json({error:"Internal error"});
     }
   }

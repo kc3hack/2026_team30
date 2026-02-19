@@ -1,12 +1,20 @@
 //DB用型(Entity)
 
 export interface MessageEntity {
-    id: string;
+    id: number; //DB連番
 
     senderId: string;
     receiverId: string;
 
     text: string;
+
+    //=========
+    //分析用
+    //=========
+
+    //時間範囲
+    start:number;
+    end:number;
 
     maxEmotion: string | null;
 
@@ -18,6 +26,11 @@ export interface MessageEntity {
 
     rms: number | null;
     db: number | null;
+
+
+    //=========
+    //表示用
+    //=========
 
     //テキスト表示用スタイル(常時保存)
     fontSize: number;
