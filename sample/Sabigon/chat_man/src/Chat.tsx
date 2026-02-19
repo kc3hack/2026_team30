@@ -12,7 +12,6 @@ type Message = {
 };
 
 function Chat() {
-
   const navigate = useNavigate();
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -126,8 +125,6 @@ function Chat() {
 
       {/* ===== 入力エリア ===== */}
       <div className="input-area">
-
-        {/* 文字サイズ */}
         <select value={size} onChange={(e) => setSize(e.target.value)}>
           <option value="12">小</option>
           <option value="16">中</option>
@@ -135,14 +132,12 @@ function Chat() {
           <option value="32">特大</option>
         </select>
 
-        {/* 色選択 */}
         <input
           type="color"
           value={color}
           onChange={(e) => setColor(e.target.value)}
         />
 
-        {/* 入力 */}
         <input
           type="text"
           placeholder="メッセージ入力"
