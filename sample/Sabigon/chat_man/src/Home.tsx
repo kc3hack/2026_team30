@@ -7,10 +7,11 @@ type Friend = {
   avatar: string;
 };
 
+// ホーム画面: 友達一覧を表示
 function Friend() {
   const navigate = useNavigate();
 
-  // 仮の友達データ（あとでAPI化できる）
+  // 仮の友達データ（あとでAPI化できる予定）
   const friends: Friend[] = [
     {
       id: 1,

@@ -2,12 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
+// ログイン画面: ユーザーIDとルーム名を入力してlocalStorageに保存
 function Login() {
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
 
+  // ログインボタンクリック時の処理
   const handleLogin = () => {
     if (!name || !room) {
       alert("名前とルーム名を入力して");
