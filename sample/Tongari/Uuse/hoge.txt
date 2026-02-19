@@ -1,0 +1,20 @@
+ポスグレこんな感じです
+
+CREATE TABLE messages (
+    id UUID PRIMARY KEY,
+
+    sender_id TEXT NOT NULL,
+    receiver_id TEXT NOT NULL,
+
+    text TEXT NOT NULL,
+
+    joy FLOAT NULL,
+    anger FLOAT NULL,
+    sadness FLOAT NULL,
+    surprise FLOAT NULL,
+
+    font_size INT NOT NULL,
+    color TEXT NOT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

@@ -1,0 +1,35 @@
+FROM python:3.10
+
+WORKDIR /workspace
+
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# pip / setuptools
+RUN pip install --upgrade pip \
+    && pip install "setuptools<70" wheel
+
+# Web / SpeechBrain パッケージ（API と対話的利用両方に対応）
+RUN pip install --no-cache-dir \
+    fastapi==0.110.0 \
+    "uvicorn[standard]==0.29.0" \
+    python-multipart==0.0.6 \
+    speechbrain==0.5.16 \
+    transformers==4.31.0 \
+    huggingface-hub==0.16.4 \
+    librosa==0.10.1 \
+    numpy==1.26.4 \
+    soundfile==0.12.1 \
+    ipython
+
+# expose API port for SpeechBrain service
+EXPOSE 8001
+
+# 作業ディレクトリをホストとマウントすることを想定（docker-compose で設定）
+VOLUME ["/workspace"]
+
+# デフォルトはコンテナを起動したままにする（開発者が exec して使う）
+CMD ["/bin/sh", "-c", "tail -f /dev/null"]
