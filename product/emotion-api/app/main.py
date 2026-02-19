@@ -25,7 +25,4 @@ async def analyze(file: UploadFile = File(...)):
     # ② 感情分析
     emotion_result = analyze_audio_by_json(file_path, transcript_result)
 
-    return {
-        "transcription": transcript_result,
-        "emotion": emotion_result
-    }
+    return emotion_result
