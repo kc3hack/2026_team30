@@ -1,4 +1,4 @@
-//エントリーポイント
+//ここがエントリーポイントです。Expressサーバーを立ち上げてルートを登録します。
 import express from 'express';
 import cors from 'cors';
 import messageRoutes from './routes/message.route';

@@ -32,12 +32,10 @@ sample\Tongari\chat-backend\srcでnpx nodemon index.tsと打ったらサーバ�
 
 - express
 
-- nodemon
-
 - axios
 
 - cors
 
-- uuid
-
 - dotenv
+
+- multer

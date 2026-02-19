@@ -1,11 +1,12 @@
+//===============
 //ビジネスロジック
+//===============
+
 import { MessageEntity } from "../models/message.model";
-import type {PythonMessageDTO} from "../dto/python.dto";
+import type {PythonResponseDTO} from "../dto/python.dto";
 import { saveMessage } from "../repositories/message.repository";
 import { callPython } from "../utils/pythonClient";
-import { v4 as uuid } from "uuid";
 import { findMessageBetweenUsers } from "../repositories/message.repository";
-import { text } from "node:stream/consumers";
 
 //音声ファイルからメッセージを作成する関数
 export async function createFromAudio(
@@ -14,7 +15,7 @@ export async function createFromAudio(
   filePath: string
 ) {
   //Pythonに音声ファイルを渡してテキストと感情分析の結果を受け取る
-  const pythonData: PythonMessageDTO = await callPython(filePath);
+  const pythonData: PythonResponseDTO = await callPython(filePath);
 
   //テキスト処理(感情に応じた色を設定)
   const colorMap: Record<string, string> = {
@@ -26,25 +27,29 @@ export async function createFromAudio(
 
   //MessageEntityを作成して保存
   const message: MessageEntity = {
-    id: uuid(),
+    id:pythonData.id,
 
     senderId,
     receiverId,
 
     text: pythonData.text,
 
-    maxEmotion: pythonData.maxEmotion,
+    start:pythonData.start,
+    end:pythonData.end,
 
-    neu: pythonData.neu,
-    hap: pythonData.hap,
-    ang: pythonData.ang,
-    sad: pythonData.sad,
+    maxEmotion: pythonData.predicted_emotion,
+    
+    neu: pythonData.emotion_scores.neu,
+    hap: pythonData.emotion_scores.hap,
+    ang: pythonData.emotion_scores.ang,
+    sad: pythonData.emotion_scores.sad,
 
-    rms: pythonData.rms,
-    db: pythonData.db,
+    
+    rms: pythonData.volume_rms,
+    db: pythonData.volume_db,
 
-    fontSize: pythonData.fontSize,
-    color: colorMap[pythonData.maxEmotion] || "#000",
+    fontSize: pythonData.font_size,
+    color: colorMap[pythonData.predicted_emotion] || "#000",
 
     createdAt: new Date()
   };
