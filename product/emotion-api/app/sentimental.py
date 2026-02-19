@@ -9,7 +9,7 @@ feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained(model_name)
 model = Wav2Vec2ForSequenceClassification.from_pretrained(model_name)
 
 
-def analyze_emotion(file_path):
+def analyze_emotion(file_path,id,start,end):
 
     # 音声読み込み
     speech, sr = librosa.load(file_path, sr=16000)
@@ -45,6 +45,9 @@ def analyze_emotion(file_path):
     font_size = db_to_fontsize(db)
 
     result = {
+        "id": id,
+        "start": start,
+        "end": end,
         "predicted_emotion": predicted_emotion,
         "emotion_scores": emotion_scores,
         "volume_rms": float(rms),
