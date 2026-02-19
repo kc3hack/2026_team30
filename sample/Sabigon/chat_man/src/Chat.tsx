@@ -2,32 +2,34 @@ import { useState, useRef } from "react";
 import "./Chat.css";
 import { useNavigate } from "react-router-dom";
 
-
+// ===== メッセージ型 =====
 type Message = {
   text?: string;
   audio?: string;
   time: string;
   color?: string;
   size?: string;
+  sender: "me" | "other";
 };
 
 function Chat() {
-
   const navigate = useNavigate();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
 
-  // ★文字設定
+  // ===== 文字設定 =====
   const [color, setColor] = useState("#ffffff");
   const [size, setSize] = useState("16");
 
-  // 録音
+  // ===== 録音 =====
   const [recording, setRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunks = useRef<Blob[]>([]);
 
-  // ===== テキスト送信 =====
+  // =============================
+  // ① テキスト送信
+  // =============================
   const sendMessage = () => {
     if (input.trim() === "") return;
 
@@ -37,22 +39,47 @@ function Chat() {
       ":" +
       now.getMinutes().toString().padStart(2, "0");
 
+    // ===== 自分のメッセージ =====
     const newMessage: Message = {
       text: input,
       time: time,
       color: color,
       size: size,
+      sender: "me",
     };
 
     setMessages((prev) => [...prev, newMessage]);
+
+    const sentText = input;   // ←内容保存
+    const sentColor = color;  // ←色保存
+    const sentSize = size;    // ←サイズ保存
     setInput("");
+
+    // =============================
+    // ② 相手の自動返信（デモ）
+    // 自分と同じ色・サイズで返す
+    // =============================
+    setTimeout(() => {
+      const reply: Message = {
+        text: sentText + "（自動返信）", // 同じ内容
+        time: time,
+        color: sentColor, // ←色コピー
+        size: sentSize,   // ←サイズコピー
+        sender: "other",
+      };
+
+      setMessages((prev) => [...prev, reply]);
+    }, 800);
   };
 
+  // Enter送信
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") sendMessage();
   };
 
-  // ===== 録音 =====
+  // =============================
+  // ③ 録音開始
+  // =============================
   const startRecording = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const mediaRecorder = new MediaRecorder(stream);
@@ -67,6 +94,9 @@ function Chat() {
       chunks.current.push(e.data);
     };
 
+    // =============================
+    // ④ 録音停止→メッセージ化
+    // =============================
     mediaRecorder.onstop = () => {
       const blob = new Blob(chunks.current, { type: "audio/webm" });
       const url = URL.createObjectURL(blob);
@@ -77,11 +107,13 @@ function Chat() {
         ":" +
         now.getMinutes().toString().padStart(2, "0");
 
-      setMessages((prev) => [
-        ...prev,
-        { audio: url, time: time }
-      ]);
+      const newMessage: Message = {
+        audio: url,
+        time: time,
+        sender: "me",
+      };
 
+      setMessages((prev) => [...prev, newMessage]);
       setRecording(false);
     };
   };
@@ -92,27 +124,31 @@ function Chat() {
 
   return (
     <div className="chat-container">
-      <h1>チャットアプリ</h1>
+      <h1>チャット</h1>
 
-      {/* ===== チャット表示 ===== */}
+      {/* =============================
+          チャット表示
+      ============================= */}
       <div className="chat-box">
         {messages.map((msg, index) => (
-          <div key={index} className="message my">
-
-            {/* テキスト */}
+          <div
+            key={index}
+            className={msg.sender === "me" ? "message my" : "message other"}
+          >
+            {/* ===== テキスト表示 ===== */}
             {msg.text && (
               <div
                 className="text"
                 style={{
-                  color: msg.color,
-                  fontSize: msg.size + "px",
+                  color: msg.color || "black",
+                  fontSize: (msg.size || "16") + "px",
                 }}
               >
                 {msg.text}
               </div>
             )}
 
-            {/* 音声 */}
+            {/* ===== 音声 ===== */}
             {msg.audio && (
               <audio controls src={msg.audio} style={{ width: "200px" }} />
             )}
@@ -122,10 +158,11 @@ function Chat() {
         ))}
       </div>
 
-      {/* ===== 入力エリア ===== */}
+      {/* =============================
+          入力エリア
+      ============================= */}
       <div className="input-area">
-
-        {/* 文字サイズ */}
+        {/* サイズ */}
         <select value={size} onChange={(e) => setSize(e.target.value)}>
           <option value="12">小</option>
           <option value="16">中</option>
@@ -133,14 +170,14 @@ function Chat() {
           <option value="32">特大</option>
         </select>
 
-        {/* 色選択 */}
+        {/* 色 */}
         <input
           type="color"
           value={color}
           onChange={(e) => setColor(e.target.value)}
         />
 
-        {/* 入力 */}
+        {/* テキスト */}
         <input
           type="text"
           placeholder="メッセージ入力"
@@ -151,13 +188,15 @@ function Chat() {
 
         <button onClick={sendMessage}>送信</button>
 
+        {/* 録音 */}
         {!recording ? (
           <button onClick={startRecording}>🎤</button>
         ) : (
           <button onClick={stopRecording}>■</button>
         )}
       </div>
-      <button onClick={()=>navigate("/Home")}>←戻る</button>
+
+      <button onClick={() => navigate("/Home")}>←戻る</button>
     </div>
   );
 }

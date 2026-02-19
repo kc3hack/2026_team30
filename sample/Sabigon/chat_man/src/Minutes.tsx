@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "./App.css";
 
+// 議事録・文字起こし画面
 function Minutes() {
   const navigate = useNavigate();
   const [text, setText] = useState("");

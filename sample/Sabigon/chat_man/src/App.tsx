@@ -4,8 +4,7 @@ import Home from "./Home";
 import Chat from "./Chat";
 import Minutes from "./Minutes";
 
-
-
+// アプリケーション全体のルーティング設定
 function App() {
   return (
     <BrowserRouter>
