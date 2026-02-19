@@ -83,6 +83,7 @@ def transcribe_audio(file_path):
                 print(text)
                 print()
                 response_data.append({
+                    "id": len(response_data) + 1,
                     "start": start,
                     "end": end,
                     "text": text
@@ -96,11 +97,10 @@ def transcribe_audio(file_path):
 
         time.sleep(3)
 
-def add_log(text_log, start, end, text):
+def add_log(text_log, id,start, end, text):
 
-    new_id = len(text_log) + 1
     text_log.append({
-        "id": new_id,
+        "id": id,
         "start": start,
         "end": end,
         "text": text
