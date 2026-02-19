@@ -2,19 +2,22 @@
 import { Request, Response } from "express";
 import multer from "multer";
 import { createFromAudio } from "../services/message.service";
+import {getChatHistory} from "../services/message.service";
 
+//UUID生成
 const upload = multer({ dest: "uploads/" });
 
+//ファイルアップロードのミドルウェア
 export const uploadMiddleware = upload.single("file");
 
+//音声ファイルからメッセージを作成するコントローラー
 export async function createAudioMessage(
   req: Request,
   res: Response
-) {
-    
+) {   
   try {
     const { senderId, receiverId } = req.body;
-    //reqのうけとり->serviceの呼び出し
+    //reqのうけとり->service(createFromAudio)の呼び出し
     const result = await createFromAudio(
       senderId,
       receiverId,
@@ -27,3 +30,24 @@ export async function createAudioMessage(
     res.status(500).json({ error: "Audio processing failed" });
   }
 }
+
+//ユーザー間のメッセージを取得するコントローラー
+export async function getMessages(
+  req: Request,
+  res: Response){
+    //クエリパラメータからユーザーIDを取得
+    try{
+      const{userId1,userId2} = req.query;
+
+      if(!userId1 || !userId2){
+        return res.status(400).json({error:"Missing userId1 or userId2"});
+      }
+
+      //service(getChatHistory)の呼び出し
+      const messages = await getChatHistory(userId1 as string, userId2 as string);
+      res.json(messages);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to retrieve messages" });
+    }
+  }
