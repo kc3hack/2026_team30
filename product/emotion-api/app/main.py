@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, File
 import shutil
 import os
 from app.transcription import transcribe_audio
-from app.sentimental import analyze_emotion
+from app.sentimental import analyze_audio_by_json
 
 app = FastAPI()
 
@@ -23,9 +23,6 @@ async def analyze(file: UploadFile = File(...)):
     transcript_result = transcribe_audio(file_path)
 
     # ② 感情分析
-    emotion_result = analyze_emotion(file_path)
+    emotion_result = analyze_audio_by_json(file_path, transcript_result)
 
-    return {
-        "transcription": transcript_result,
-        "emotion": emotion_result
-    }
+    return emotion_result
