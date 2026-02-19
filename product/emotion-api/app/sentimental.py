@@ -65,5 +65,3 @@ def db_to_fontsize(db):
 
     font_size = MIN_FONT + normalized * (MAX_FONT - MIN_FONT)
     return round(font_size, 1)
-
-print(analyze_emotion("../backend/uploads/test_tone.wav"))
