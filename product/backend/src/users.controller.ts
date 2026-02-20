@@ -1,4 +1,4 @@
-import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller,Get, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
 
@@ -13,4 +13,9 @@ export class UsersController {
     const result = await this.usersService.analyzeEmotion(file);
     return result;
   }
+
+  @Get('test-insert')
+    async testInsert() {
+        return this.usersService.testInsert();
+    }
 }

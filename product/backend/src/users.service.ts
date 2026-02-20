@@ -66,4 +66,13 @@ export class UsersService {
 
     return segments;
   }
+
+  async testInsert() {
+  await this.db.query(`
+    INSERT INTO users (name, email)
+    VALUES ('test_user', 'test@example.com')
+  `);
+
+  return { message: 'inserted' };
+}
 }
