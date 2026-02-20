@@ -2,14 +2,16 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# 依存コピー
+# package.json をコピーして依存関係インストール
 COPY package*.json ./
-
 RUN npm install
+RUN npm install pg @types/pg -D
 
-# ソースコピー
+
+# 残りのファイルをコピー
 COPY . .
 
 EXPOSE 3001
 
-CMD ["node", "server.js"]
+# NestJSをウォッチモードで起動
+CMD ["npm", "run", "start:dev"]
