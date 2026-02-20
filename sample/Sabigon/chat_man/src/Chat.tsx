@@ -7,6 +7,8 @@ import ChatStyleControls from "./chat/ChatStyleControls";
 import ChatTextInput from "./chat/ChatTextInput";
 import ChatRecorder from "./chat/ChatRecorder";
 import type { Message } from "./chat/types";
+import { fetchMessages } from "./chat/ChatMessageResponse";
+import { convertApiMessagesToUIMessages } from "./chat/ChatTimeTransfer";
 
 function Chat() {
   const navigate = useNavigate();
@@ -21,7 +23,7 @@ function Chat() {
   // =============================
   // ① テキスト送信
   // =============================
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (input.trim() === "") return;
 
     const now = new Date();
@@ -61,6 +63,13 @@ function Chat() {
 
       setMessages((prev) => [...prev, reply]);
     }, 800);
+
+    // API から取得したメッセージを変換
+    const apiMessages = await fetchMessages(); // API 呼び出し
+    if (apiMessages) {
+      const uiMessages = convertApiMessagesToUIMessages(apiMessages);
+      setMessages(uiMessages);
+    }
   };
 
   // Enter送信

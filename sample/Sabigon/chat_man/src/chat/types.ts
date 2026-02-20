@@ -6,3 +6,13 @@ export type Message = {
   size?: string;
   sender: "me" | "other";
 };
+
+export type ChatMessageResponseAPI = {
+  id:number;
+  senderId:string;
+  receicerId:string;
+  text:string;
+  textColor:string;
+  textSize:string;
+  createAt:string;  //〇〇:〇〇の形で整形します。
+};
