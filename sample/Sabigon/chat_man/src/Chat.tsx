@@ -1,16 +1,12 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
+import type { KeyboardEvent } from "react";
 import "./Chat.css";
 import { useNavigate } from "react-router-dom";
-
-// ===== メッセージ型 =====
-type Message = {
-  text?: string;
-  audio?: string;
-  time: string;
-  color?: string;
-  size?: string;
-  sender: "me" | "other";
-};
+import ChatMessages from "./chat/ChatMessages";
+import ChatStyleControls from "./chat/ChatStyleControls";
+import ChatTextInput from "./chat/ChatTextInput";
+import ChatRecorder from "./chat/ChatRecorder";
+import type { Message } from "./chat/types";
 
 function Chat() {
   const navigate = useNavigate();
@@ -19,13 +15,8 @@ function Chat() {
   const [input, setInput] = useState("");
 
   // ===== 文字設定 =====
-  const [color, setColor] = useState("#ffffff");
+  const [color, setColor] = useState("#000000");
   const [size, setSize] = useState("16");
-
-  // ===== 録音 =====
-  const [recording, setRecording] = useState(false);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunks = useRef<Blob[]>([]);
 
   // =============================
   // ① テキスト送信
@@ -73,53 +64,19 @@ function Chat() {
   };
 
   // Enter送信
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter") sendMessage();
   };
 
-  // =============================
-  // ③ 録音開始
-  // =============================
-  const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const mediaRecorder = new MediaRecorder(stream);
-
-    mediaRecorderRef.current = mediaRecorder;
-    chunks.current = [];
-
-    mediaRecorder.start();
-    setRecording(true);
-
-    mediaRecorder.ondataavailable = (e) => {
-      chunks.current.push(e.data);
+  // 録音完了時のメッセージ追加
+  const handleRecordedAudio = (audioUrl: string, time: string) => {
+    const newMessage: Message = {
+      audio: audioUrl,
+      time: time,
+      sender: "me",
     };
 
-    // =============================
-    // ④ 録音停止→メッセージ化
-    // =============================
-    mediaRecorder.onstop = () => {
-      const blob = new Blob(chunks.current, { type: "audio/webm" });
-      const url = URL.createObjectURL(blob);
-
-      const now = new Date();
-      const time =
-        now.getHours().toString().padStart(2, "0") +
-        ":" +
-        now.getMinutes().toString().padStart(2, "0");
-
-      const newMessage: Message = {
-        audio: url,
-        time: time,
-        sender: "me",
-      };
-
-      setMessages((prev) => [...prev, newMessage]);
-      setRecording(false);
-    };
-  };
-
-  const stopRecording = () => {
-    mediaRecorderRef.current?.stop();
+    setMessages((prev) => [...prev, newMessage]);
   };
 
   return (
@@ -129,71 +86,27 @@ function Chat() {
       {/* =============================
           チャット表示
       ============================= */}
-      <div className="chat-box">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={msg.sender === "me" ? "message my" : "message other"}
-          >
-            {/* ===== テキスト表示 ===== */}
-            {msg.text && (
-              <div
-                className="text"
-                style={{
-                  color: msg.color || "black",
-                  fontSize: (msg.size || "16") + "px",
-                }}
-              >
-                {msg.text}
-              </div>
-            )}
-
-            {/* ===== 音声 ===== */}
-            {msg.audio && (
-              <audio controls src={msg.audio} style={{ width: "200px" }} />
-            )}
-
-            <div className="time">{msg.time}</div>
-          </div>
-        ))}
-      </div>
+      <ChatMessages messages={messages} />
 
       {/* =============================
           入力エリア
       ============================= */}
       <div className="input-area">
-        {/* サイズ */}
-        <select value={size} onChange={(e) => setSize(e.target.value)}>
-          <option value="12">小</option>
-          <option value="16">中</option>
-          <option value="24">大</option>
-          <option value="32">特大</option>
-        </select>
-
-        {/* 色 */}
-        <input
-          type="color"
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
+        <ChatStyleControls
+          color={color}
+          size={size}
+          onColorChange={setColor}
+          onSizeChange={setSize}
         />
 
-        {/* テキスト */}
-        <input
-          type="text"
-          placeholder="メッセージ入力"
+        <ChatTextInput
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={setInput}
           onKeyDown={handleKeyDown}
+          onSend={sendMessage}
         />
 
-        <button onClick={sendMessage}>送信</button>
-
-        {/* 録音 */}
-        {!recording ? (
-          <button onClick={startRecording}>🎤</button>
-        ) : (
-          <button onClick={stopRecording}>■</button>
-        )}
+        <ChatRecorder onRecorded={handleRecordedAudio} />
       </div>
 
       <button onClick={() => navigate("/Home")}>←戻る</button>

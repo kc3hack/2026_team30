@@ -71,9 +71,72 @@ h1 {
 /* ===== 入力エリア ===== */
 .input-area {
   display: flex;
+  align-items: center;
   padding: 12px;
   background: #222;
-  gap: 10px;
+  gap: 8px;
+}
+
+/* スタイルコントロール容器 */
+.input-area > div:first-child {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* カラーピッカー */
+.input-area input[type="color"] {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* サイズセレクト */
+.input-area select {
+  width: 50px;
+  height: 40px;
+  padding: 4px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 4px;
+  background: #444;
+  color: white;
+  cursor: pointer;
+}
+
+/* テキスト入力フィールド */
+.input-area .rich-input {
+  flex: 1;
+  min-height: 40px;
+  padding: 10px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background: #0f172a;
+  color: white;
+  outline: none;
+}
+
+/* 送信ボタン */
+.input-area button {
+  flex-shrink: 0;
+  width: 60px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: #4caf50;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.input-area button:hover {
+  background: #45a049;
 }
 
 input {
@@ -147,15 +210,6 @@ button:hover {
 html, body, #root {
   height: 100%;
   margin: 0;
-}
-
-.rich-input{
-  min-height:40px;
-  padding:10px;
-  border:1px solid #444;
-  border-radius:8px;
-  background:#0f172a;
-  color:white;
 }
 
 .chat-box{
@@ -284,4 +338,14 @@ html, body, #root {
   display:flex;
   flex-direction:column;
   background:#0f0f0f;
+}
+
+.rich-input-old-2{
+  min-height:40px;
+  padding:10px;
+  border:1px solid #444;
+  border-radius:8px;
+  background:#0f172a;
+  color:white;
+  outline:none;
 }
