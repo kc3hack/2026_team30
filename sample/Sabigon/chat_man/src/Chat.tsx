@@ -15,7 +15,7 @@ function Chat() {
   const [input, setInput] = useState("");
 
   // ===== 文字設定 =====
-  const [color, setColor] = useState("#ffffff");
+  const [color, setColor] = useState("#000000");
   const [size, setSize] = useState("16");
 
   // =============================
@@ -64,7 +64,7 @@ function Chat() {
   };
 
   // Enter送信
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter") sendMessage();
   };
 

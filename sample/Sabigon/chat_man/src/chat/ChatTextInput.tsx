@@ -1,29 +1,32 @@
-import type { KeyboardEvent } from "react";
+import { type KeyboardEvent, useEffect, useRef } from "react";
 
-type ChatTextInputProps = {
+type Props = {
   value: string;
-  onChange: (value: string) => void;
-  onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
+  onChange: (val: string) => void;
+  onKeyDown: (e: KeyboardEvent<HTMLDivElement>) => void;
   onSend: () => void;
 };
 
-// 文字入力
-function ChatTextInput({
-  value,
-  onChange,
-  onKeyDown,
-  onSend,
-}: ChatTextInputProps) {
+function ChatTextInput({ value, onChange, onKeyDown, onSend }: Props) {
+  const editorRef = useRef<HTMLDivElement>(null);
+
+  // valueが空になったときにdivをクリア
+  useEffect(() => {
+    if (value === "" && editorRef.current) {
+      editorRef.current.innerHTML = "";
+    }
+  }, [value]);
+
   return (
     <>
-      {/* テキスト */}
-      <input
-        type="text"
-        placeholder="メッセージ入力"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+      <div
+        id="editor"
+        ref={editorRef}
+        contentEditable
+        className="rich-input"
+        onInput={(e) => onChange(e.currentTarget.innerHTML)}
         onKeyDown={onKeyDown}
-      />
+      ></div>
 
       <button onClick={onSend}>送信</button>
     </>

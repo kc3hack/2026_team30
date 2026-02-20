@@ -1,11 +1,10 @@
 import type { Message } from "./types";
 
-type ChatMessagesProps = {
+type Props = {
   messages: Message[];
 };
 
-// チャット表示エリア
-function ChatMessages({ messages }: ChatMessagesProps) {
+function ChatMessages({ messages }: Props) {
   return (
     <div className="chat-box">
       {messages.map((msg, index) => (
@@ -13,20 +12,15 @@ function ChatMessages({ messages }: ChatMessagesProps) {
           key={index}
           className={msg.sender === "me" ? "message my" : "message other"}
         >
-          {/* テキスト */}
           {msg.text && (
             <div
-              className="text"
               style={{
-                color: msg.color || "black",
                 fontSize: (msg.size || "16") + "px",
               }}
-            >
-              {msg.text}
-            </div>
+              dangerouslySetInnerHTML={{ __html: msg.text }}
+            />
           )}
 
-          {/* 音声 */}
           {msg.audio && (
             <audio controls src={msg.audio} style={{ width: "200px" }} />
           )}
