@@ -1,5 +1,6 @@
-services:
+version: "3.9"
 
+services:
   frontend:
     build: ./frontend
     ports:
@@ -12,11 +13,10 @@ services:
     ports:
       - "3001:3001"
     depends_on:
-      - emotion-api
       - db
-    environment:
-      - PYTHON_API_URL=http://emotion-api:8000
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/app_db
+      - emotion-api
+    env_file:
+      - ./backend/.env
 
   emotion-api:
     build: ./emotion-api
@@ -26,7 +26,7 @@ services:
       - ./emotion-api/.env
 
   db:
-    image: postgres:15
+    image: postgres:16
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -36,6 +36,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./backend/db-init:/docker-entrypoint-initdb.d  # 初期SQL自動実行
 
 volumes:
   postgres_data:
