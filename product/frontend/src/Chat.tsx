@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 import "./App.css";
 import { useNavigate } from "react-router-dom";
 
-
 type Message = {
   text?: string;
   audio?: string;
@@ -12,22 +11,23 @@ type Message = {
 };
 
 function Chat() {
-
   const navigate = useNavigate();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
 
-  // ★文字設定
+  // 文字設定
   const [color, setColor] = useState("#ffffff");
   const [size, setSize] = useState("16");
 
-  // 録音
+  // 録音関連
   const [recording, setRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunks = useRef<Blob[]>([]);
 
-  // ===== テキスト送信 =====
+  // ===============================
+  // テキスト送信
+  // ===============================
   const sendMessage = () => {
     if (input.trim() === "") return;
 
@@ -39,9 +39,9 @@ function Chat() {
 
     const newMessage: Message = {
       text: input,
-      time: time,
-      color: color,
-      size: size,
+      time,
+      color,
+      size,
     };
 
     setMessages((prev) => [...prev, newMessage]);
@@ -52,40 +52,80 @@ function Chat() {
     if (e.key === "Enter") sendMessage();
   };
 
-  // ===== 録音 =====
+  // ===============================
+  // 録音開始
+  // ===============================
   const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const mediaRecorder = new MediaRecorder(stream);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
 
-    mediaRecorderRef.current = mediaRecorder;
-    chunks.current = [];
+      mediaRecorderRef.current = mediaRecorder;
+      chunks.current = [];
 
-    mediaRecorder.start();
-    setRecording(true);
+      mediaRecorder.start();
+      setRecording(true);
 
-    mediaRecorder.ondataavailable = (e) => {
-      chunks.current.push(e.data);
-    };
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunks.current.push(e.data);
+        }
+      };
 
-    mediaRecorder.onstop = () => {
-      const blob = new Blob(chunks.current, { type: "audio/webm" });
-      const url = URL.createObjectURL(blob);
+      mediaRecorder.onstop = async () => {
+        const blob = new Blob(chunks.current, { type: "audio/webm" });
 
-      const now = new Date();
-      const time =
-        now.getHours().toString().padStart(2, "0") +
-        ":" +
-        now.getMinutes().toString().padStart(2, "0");
+        const now = new Date();
+        const time =
+          now.getHours().toString().padStart(2, "0") +
+          ":" +
+          now.getMinutes().toString().padStart(2, "0");
 
-      setMessages((prev) => [
-        ...prev,
-        { audio: url, time: time }
-      ]);
+        // ===== ローカル再生用 =====
+        const url = URL.createObjectURL(blob);
 
-      setRecording(false);
-    };
+        setMessages((prev) => [
+          ...prev,
+          { audio: url, time }
+        ]);
+
+        // ===== バックエンドへ送信 =====
+        const formData = new FormData();
+        formData.append("file", blob, "recording.webm");
+
+        try {
+          const response = await fetch(
+            "http://localhost:3001/users/analyze",
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Upload failed");
+          }
+
+          const result = await response.json();
+          console.log("Emotion result:", result);
+
+          // 🔥 必要ならここで感情結果を画面に追加できる
+          // setMessages(prev => [...prev, { text: JSON.stringify(result), time }])
+
+        } catch (err) {
+          console.error("Upload error:", err);
+        }
+
+        setRecording(false);
+      };
+    } catch (err) {
+      console.error("Microphone error:", err);
+    }
   };
 
+  // ===============================
+  // 録音停止
+  // ===============================
   const stopRecording = () => {
     mediaRecorderRef.current?.stop();
   };
@@ -140,7 +180,7 @@ function Chat() {
           onChange={(e) => setColor(e.target.value)}
         />
 
-        {/* 入力 */}
+        {/* テキスト入力 */}
         <input
           type="text"
           placeholder="メッセージ入力"
@@ -157,7 +197,8 @@ function Chat() {
           <button onClick={stopRecording}>■</button>
         )}
       </div>
-      <button onClick={()=>navigate("/")}>←戻る</button>
+
+      <button onClick={() => navigate("/")}>←戻る</button>
     </div>
   );
 }
