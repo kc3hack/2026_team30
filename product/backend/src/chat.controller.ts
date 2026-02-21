@@ -18,7 +18,13 @@ export class ChatController {
   }
 
   @Post('text')
-  async saveTextMessage(@Body() body:any){
-    return this.chatService.saveTextMessage(body);
+  async saveTextMessage(
+    @Body('senderId') senderId: string,
+    @Body('receiverId') receiverId: string,
+    @Body('text') text: string,
+    @Body('textColor') textColor: string,
+    @Body('textSize') textSize: number
+  ){
+    return this.chatService.saveTextMessage(senderId, receiverId, text, textColor, textSize);
   }
 }

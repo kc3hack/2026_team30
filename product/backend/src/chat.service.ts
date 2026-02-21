@@ -25,14 +25,7 @@ export class ChatService {
     //=================================
     //テキストが送られてきたときの保存処理
     //=================================
-    async saveTextMessage(data:any){
-        const {
-            senderId,
-            recieverId,
-            text,
-            fontSize,
-            fontColor
-        } = data;
+    async saveTextMessage(senderId: string, recieverId: string, text: string, fontColor: string, fontSize: number) {
 
         //room_id取得
         const roomResult = await this.db.query(
