@@ -7,8 +7,10 @@ import { UsersService } from './users.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
+import { ChatModule } from './chat.module';
+
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule,ChatModule],
   controllers: [AppController, UsersController, AuthController],
   providers: [AppService, UsersService, AuthService],
 })

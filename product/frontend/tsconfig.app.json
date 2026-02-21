@@ -24,5 +24,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": ["src", "src copy/chat/ChatRecorder.tsx", "src copy/Login.tsx"]
 }
