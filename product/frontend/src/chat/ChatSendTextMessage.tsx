@@ -5,7 +5,7 @@
 import axios from "axios";
 import type { Message } from "./types";
 
-const API_URL = "http://localhost:3001/text";
+const API_URL = "http://localhost:3001/chat/text";
 
 //テキスト送信
 export const sendTextMessage = async (
