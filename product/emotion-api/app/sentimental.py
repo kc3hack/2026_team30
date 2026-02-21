@@ -70,6 +70,15 @@ def analyze_chunk(chunk, sr, seg_id, start, end, text=""):
 
     predicted_emotion = max(emotion_scores, key=emotion_scores.get)
 
+    if predicted_emotion == "hap":
+        color = "#FFD700"  # 金色
+    elif predicted_emotion == "ang":
+        color = "#FF4500"  # オレンジレッド
+    elif predicted_emotion == "sad":
+        color = "#4A90E2"  # ブルー
+    else:
+        color = "#333333"  # ダークグレー
+
     font_size = db_to_fontsize(db)
 
     return {
@@ -81,7 +90,8 @@ def analyze_chunk(chunk, sr, seg_id, start, end, text=""):
         "emotion_scores": emotion_scores,
         "volume_rms": float(rms),
         "volume_db": float(db),
-        "font_size": float(font_size)
+        "font_size": float(font_size),
+        "color": color
     }
 
 

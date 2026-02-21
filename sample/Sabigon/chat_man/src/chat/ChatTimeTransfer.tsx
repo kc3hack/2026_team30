@@ -18,13 +18,16 @@ export function convertApiMessagesToUIMessages(
 }
 
 // 時間フォーマット: "2026-02-20 12:55:00.308919" → "12:55"
+// ISO形式対応版
 export function formatTime(timeString: string): string {
   try {
-    // "YYYY-MM-DD HH:MM:SS.ffffff" 形式から HH:MM を抽出
-    const timePart = timeString.split(" ")[1]; // "12:55:00.308919"
-    const [hours, minutes] = timePart.split(":");
-    return `${hours}:${minutes}`;
+    const date = new Date(timeString);
+
+    return date.toLocaleTimeString("ja-JP", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   } catch {
-    return timeString; // パース失敗時はそのまま返す
+    return timeString;
   }
 }

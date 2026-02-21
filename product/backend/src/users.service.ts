@@ -40,12 +40,12 @@ export class UsersService {
     const placeholders: string[] = [];
 
     segments.forEach((seg, index) => {
-      const base = index * 13;
+      const base = index * 15; // 1レコードあたり15カラム分のプレースホルダーを用意
 
       placeholders.push(
         `($${base+1},$${base+2},$${base+3},$${base+4},$${base+5},
           $${base+6},$${base+7},$${base+8},$${base+9},$${base+10},
-          $${base+11},$${base+12},$${base+13},$${base+14})`
+          $${base+11},$${base+12},$${base+13},$${base+14},$${base+15})`
       );
 
       values.push(
@@ -62,7 +62,8 @@ export class UsersService {
         seg.emotion_scores.sad,
         seg.volume_rms,
         seg.volume_db,
-        seg.font_size
+        seg.font_size,
+        seg.color
       );
     });
 
@@ -71,7 +72,7 @@ export class UsersService {
         room_id, chat_id, seg_id, start_time, end_time,
         chat_text, predicted_emotion,
         neu, hap, ang, sad,
-        volume_rms, volume_db, font_size
+        volume_rms, volume_db, font_size, font_color
       )
       VALUES ${placeholders.join(',')}
     `;
@@ -93,13 +94,4 @@ export class UsersService {
 
     return friends.rows as Friend[];
   }
-
-  async testInsert() {
-  await this.db.query(`
-    INSERT INTO users (name, email)
-    VALUES ('test_user', 'test@example.com')
-  `);
-
-  return { message: 'inserted' };
-}
 }
