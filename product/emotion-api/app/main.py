@@ -1,5 +1,5 @@
 from fastapi import FastAPI, UploadFile, File
-from fastapi.responses import Response
+from fastapi.responses import JSONResponse, Response
 import shutil
 import os
 from app.transcription import transcribe_audio
@@ -32,23 +32,28 @@ async def analyze(file: UploadFile = File(...)):
 
 @app.post("/docsAnalyze/")
 async def docs_analyze(file: UploadFile = File(...)):
+    try:
+        # ファイル名と保存先を決める
+        file_path = os.path.join(UPLOAD_DIR, file.filename)
 
-    file_path = f"{UPLOAD_DIR}/{file.filename}"
+        # バイナリを保存
+        contents = await file.read()
+        with open(file_path, "wb") as f:
+            f.write(contents)
 
-    # ファイル保存
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+        # ログにファイルサイズを表示
+        print(f"Received file: {file.filename}, size: {len(contents)} bytes")
 
-    # ① 文字起こし
-    transcript_result = transcribe_audio_docs(file_path)
+        # ① 文字起こし
+        transcript_result = transcribe_audio_docs(file_path)
 
-    emotion_result = analyze_audio_by_json_docs(file_path, transcript_result)
+        # ② 感情分析
+        emotion_result = analyze_audio_by_json_docs(file_path, transcript_result)
 
-    # ③ 感情グラフ作成
-    image_bytes = create_emotion_graph_bytes(emotion_result)
 
-    return Response(    
-        emotion_result,
-        content=image_bytes,
-        media_type="image/png"
-    )
+        # 確認用レスポンス
+        return Response(content=create_emotion_graph_bytes(emotion_result), media_type="image/png")
+
+    except Exception as exc:
+        print("ERROR:", exc)
+        return JSONResponse(content={"error": str(exc)}, status_code=500)
