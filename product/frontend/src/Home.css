@@ -1,0 +1,105 @@
+.friend-page {
+  display: flex;
+  height: 100vh;
+  background: #0f172a;
+  color: white;
+}
+
+/* ===== サイドバー ===== */
+.sidebar {
+  width: 220px;
+  background: #020617;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar h2 {
+  margin-bottom: 20px;
+  color: #38bdf8;
+}
+
+.sidebar button {
+  padding: 12px;
+  border: none;
+  background: #1e293b;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: 0.2s;
+}
+
+.sidebar button:hover {
+  background: #334155;
+}
+
+.sidebar .active {
+  background: #2563eb;
+}
+
+/* ===== メイン ===== */
+.friend-main {
+  flex: 1;
+  padding: 40px;
+  overflow-y: auto;
+}
+
+.friend-main h1 {
+  margin-bottom: 30px;
+}
+
+/* ===== 友達カード ===== */
+.friend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.friend-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  background: #020617;
+  padding: 15px;
+  border-radius: 14px;
+  transition: 0.2s;
+}
+
+.friend-card:hover {
+  background: #1e293b;
+}
+
+.friend-card img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.info {
+  flex: 1;
+}
+
+.name {
+  font-size: 18px;
+}
+
+.status {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.chat-btn {
+  padding: 10px 16px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.chat-btn:hover {
+  background: #3b82f6;
+}

@@ -20,7 +20,7 @@ function Chat() {
   const [input, setInput] = useState("");
 
   // ===== 文字設定 =====
-  const [color, setColor] = useState("#ffffff");
+  const [color, setColor] = useState("#000000");
   const [size, setSize] = useState("16");
 
   const myUserId = "1";
