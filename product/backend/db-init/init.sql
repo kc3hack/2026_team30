@@ -1,12 +1,18 @@
 CREATE TABLE IF NOT EXISTS users (
-  id SERIAL PRIMARY KEY,
-  name TEXT NOT NULL,
-  email TEXT UNIQUE NOT NULL,
+  userid TEXT PRIMARY KEY,
+  password TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS chat_rooms (
+  room_id SERIAL PRIMARY KEY,
+  senderid TEXT NOT NULL,
+  receiverid TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS chat_history (
   id SERIAL PRIMARY KEY,
+  room_id INTEGER NOT NULL,
   chat_id INTEGER NOT NULL,
   seg_id INTEGER NOT NULL,
   start_time TEXT NOT NULL,
