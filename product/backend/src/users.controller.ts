@@ -33,9 +33,4 @@ async analyzeEmotion(
 
     return this.usersService.getFriends(body.name);
   }
-
-  @Get('test-insert')
-    async testInsert() {
-        return this.usersService.testInsert();
-    }
 }
