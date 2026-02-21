@@ -47,6 +47,12 @@ function Friend() {
 
   return (
     <div className="friend-page">
+      <div className="sidebar">
+        <h2>EmotionChat</h2>
+
+        <button className="active">👥 友達</button>
+        <button onClick={()=>navigate("/minutes")}>📒 議事録</button>
+      </div>
       <div className="friend-main">
         <h1>友達一覧</h1>
 
