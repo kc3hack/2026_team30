@@ -30,7 +30,6 @@ function Chat() {
       ":" +
       now.getMinutes().toString().padStart(2, "0");
 
-    // ===== 自分のメッセージ =====
     const newMessage: Message = {
       text: input,
       time: time,
@@ -41,21 +40,18 @@ function Chat() {
 
     setMessages((prev) => [...prev, newMessage]);
 
-    const sentText = input;   // ←内容保存
-    const sentColor = color;  // ←色保存
-    const sentSize = size;    // ←サイズ保存
+    const sentText = input;
+    const sentColor = color;
+    const sentSize = size;
     setInput("");
 
-    // =============================
-    // ② 相手の自動返信（デモ）
-    // 自分と同じ色・サイズで返す
-    // =============================
+    // デモ自動返信
     setTimeout(() => {
       const reply: Message = {
-        text: sentText + "（自動返信）", // 同じ内容
+        text: sentText + "（自動返信）",
         time: time,
-        color: sentColor, // ←色コピー
-        size: sentSize,   // ←サイズコピー
+        color: sentColor,
+        size: sentSize,
         sender: "other",
       };
 
@@ -63,34 +59,38 @@ function Chat() {
     }, 800);
   };
 
-  // Enter送信
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter") sendMessage();
   };
 
-  // 録音完了時のメッセージ追加
-  const handleRecordedAudio = (audioUrl: string, time: string) => {
-    const newMessage: Message = {
-      audio: audioUrl,
-      time: time,
-      sender: "me",
-    };
+  // =============================
+  // 🔥 録音完了 → 配列result対応
+  // =============================
+  const handleRecordedAudio = (
+    audioUrl: string,
+    time: string,
+    result: any[]
+  ) => {
+    console.log("受け取ったresult:", result);
 
-    setMessages((prev) => [...prev, newMessage]);
+    // 配列をMessage型に変換
+    const newMessages: Message[] = result.map((item) => ({
+      text: item.text,
+      time: time,
+      color: item.color,
+      size: item.size,
+      sender: "me",
+    }));
+
+    setMessages((prev) => [...prev, ...newMessages]);
   };
 
   return (
     <div className="chat-container">
       <h1>チャット</h1>
 
-      {/* =============================
-          チャット表示
-      ============================= */}
       <ChatMessages messages={messages} />
 
-      {/* =============================
-          入力エリア
-      ============================= */}
       <div className="input-area">
         <ChatStyleControls
           color={color}
@@ -106,6 +106,7 @@ function Chat() {
           onSend={sendMessage}
         />
 
+        {/* 🔥 ここは変更なし */}
         <ChatRecorder onRecorded={handleRecordedAudio} />
       </div>
 
