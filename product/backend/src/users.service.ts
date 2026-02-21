@@ -2,6 +2,11 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { DatabaseService } from './database/database.service';
 import FormData from 'form-data';
+type Friend = {
+  id: string;
+  name: string;
+  avatar: string;
+};
 
 @Injectable()
 export class UsersService {
@@ -74,6 +79,19 @@ export class UsersService {
     await this.db.query(query, values);
 
     return segments;
+  }
+
+  async getFriends(userid: string) {
+    const room_values: any[] = [];
+    const room_placeholders: string[] = [];
+
+    room_placeholders.push(`$1`);
+    room_values.push(userid)
+
+    const friends_query = `SELECT userid, avatar FROM users WHERE userid <> $1`;
+    const friends = await this.db.query(friends_query, room_values);
+
+    return friends.rows as Friend[];
   }
 
   async testInsert() {
