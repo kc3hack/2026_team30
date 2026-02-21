@@ -1,10 +1,16 @@
 import { useRef, useState } from "react";
 
 type ChatRecorderProps = {
+  senderId: string;
+  receiverId: string;
   onRecorded: (audioUrl: string, time: string, result: any) => void;
 };
 
-function ChatRecorder({ onRecorded }: ChatRecorderProps) {
+function ChatRecorder({
+  senderId,
+  receiverId,
+  onRecorded,
+}: ChatRecorderProps) {
   const [recording, setRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunks = useRef<Blob[]>([]);
@@ -43,11 +49,10 @@ function ChatRecorder({ onRecorded }: ChatRecorderProps) {
           const url = URL.createObjectURL(blob);
           const time = getTime();
 
-          // ===== バックエンド送信 =====
           const formData = new FormData();
           formData.append("file", blob, "recording.webm");
-          formData.append("senderId", "user1");
-          formData.append("receiverId", "user2");
+          formData.append("senderId", senderId);
+          formData.append("receiverId", receiverId);
 
           const response = await fetch(
             "http://localhost:3001/users/analyze",
@@ -62,9 +67,8 @@ function ChatRecorder({ onRecorded }: ChatRecorderProps) {
           }
 
           const result = await response.json();
-          console.log("Emotion result:", result);
 
-          // ✅ ここで1回だけ呼ぶ
+          // ✅ 親に通知（ここで1回だけ）
           onRecorded(url, time, result);
 
         } catch (err) {
@@ -72,7 +76,7 @@ function ChatRecorder({ onRecorded }: ChatRecorderProps) {
         } finally {
           setRecording(false);
 
-          // 🎤 マイク解放
+          // マイク解放
           streamRef.current?.getTracks().forEach((track) => track.stop());
         }
       };
