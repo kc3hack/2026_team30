@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body } from '@nestjs/common';
 import { ChatService } from './chat.service';
 
 @Controller('chat')
@@ -15,5 +15,10 @@ export class ChatController {
       receiverId
     );
     return result;
+  }
+
+  @Post('text')
+  async saveTextMessage(@Body() body:any){
+    return this.chatService.saveTextMessage(body);
   }
 }
