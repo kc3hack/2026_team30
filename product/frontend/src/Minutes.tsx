@@ -17,21 +17,24 @@ function Minutes() {
     }
 
     const formData = new FormData();
-    formData.append("file", file);
+formData.append("file", file);
 
-    const response = await fetch("http://localhost:3001/docs/graph", {
-      method: "POST",
-      body: formData, // ← JSONではなくFormData
-    });
+const response = await fetch("http://localhost:3001/docs/graph", {
+  method: "POST",
+  body: formData,
+});
 
-    if (!response.ok) {
-      alert("アップロード失敗");
-      return;
-    }
+if (!response.ok) {
+  alert("アップロード失敗");
+  return;
+}
 
-    const blob = await response.blob();
-    const imageUrl = URL.createObjectURL(blob);
-    setImage(imageUrl);
+const data = await response.json();
+
+// 🔹 Data URI に変換して表示
+const imageUrl = `data:image/png;base64,${data.imageBase64}`;
+setImage(imageUrl);
+setText(data.text); // 文字起こし
   };
 
   return (

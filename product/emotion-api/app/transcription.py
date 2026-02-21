@@ -8,6 +8,17 @@ headers = {
     "authorization": ASSEMBLYAI_API_KEY
 }
 
+def transcribe(data):
+    result = ""
+
+    for item in data:
+        print(f"[{item['start']:.2f}s - {item['end']:.2f}s] Speaker {item['speaker']}:")
+        print(item['text'])
+        print()
+        result += f"[{item['start']:.2f}s - {item['end']:.2f}s] Speaker {item['speaker']}: {item['text']}\n"
+
+    return result
+
 
 def transcribe_audio(file_path):
 

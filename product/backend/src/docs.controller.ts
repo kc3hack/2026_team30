@@ -1,7 +1,6 @@
-import { Controller, Post, UploadedFile, UseInterceptors, Res } from '@nestjs/common';
+import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DocsService } from './docs.service';
-import type { Response } from 'express'; // ← 'import type' に変更
 
 @Controller('docs')
 export class DocsController {
@@ -9,10 +8,13 @@ export class DocsController {
 
   @Post('graph')
   @UseInterceptors(FileInterceptor('file'))
-  async getGraph(@UploadedFile() file: Express.Multer.File, @Res() res: Response) {
-    const pngBytes = await this.docsService.getEmotionGraph(file);
+  async getGraph(@UploadedFile() file: Express.Multer.File) {
+    const result = await this.docsService.getEmotionGraph(file);
 
-    res.setHeader('Content-Type', 'image/png');
-    res.send(pngBytes);
+    // JSONで返す
+    return {
+      imageBase64: result.imageBase64,
+      text: result.text,
+    };
   }
 }
