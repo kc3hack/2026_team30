@@ -1,14 +1,14 @@
 import { useRef, useState } from "react";
 
 type ChatRecorderProps = {
-  onRecorded: (audioUrl: string, time: string) => void;
+  onRecorded: (audioUrl: string, time: string, result: any) => void;
 };
 
-// 音声録音
 function ChatRecorder({ onRecorded }: ChatRecorderProps) {
   const [recording, setRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunks = useRef<Blob[]>([]);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const getTime = () => {
     const now = new Date();
@@ -20,27 +20,65 @@ function ChatRecorder({ onRecorded }: ChatRecorderProps) {
   };
 
   const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const mediaRecorder = new MediaRecorder(stream);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
 
-    mediaRecorderRef.current = mediaRecorder;
-    chunks.current = [];
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      chunks.current = [];
 
-    mediaRecorder.start();
-    setRecording(true);
+      mediaRecorder.start();
+      setRecording(true);
 
-    mediaRecorder.ondataavailable = (e) => {
-      chunks.current.push(e.data);
-    };
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunks.current.push(e.data);
+        }
+      };
 
-    mediaRecorder.onstop = () => {
-      const blob = new Blob(chunks.current, { type: "audio/webm" });
-      const url = URL.createObjectURL(blob);
-      const time = getTime();
+      mediaRecorder.onstop = async () => {
+        try {
+          const blob = new Blob(chunks.current, { type: "audio/webm" });
+          const url = URL.createObjectURL(blob);
+          const time = getTime();
 
-      onRecorded(url, time);
-      setRecording(false);
-    };
+          // ===== バックエンド送信 =====
+          const formData = new FormData();
+          formData.append("file", blob, "recording.webm");
+          formData.append("senderId", "user1");
+          formData.append("receiverId", "user2");
+
+          const response = await fetch(
+            "http://localhost:3001/users/analyze",
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Upload failed");
+          }
+
+          const result = await response.json();
+          console.log("Emotion result:", result);
+
+          // ✅ ここで1回だけ呼ぶ
+          onRecorded(url, time, result);
+
+        } catch (err) {
+          console.error("Upload error:", err);
+        } finally {
+          setRecording(false);
+
+          // 🎤 マイク解放
+          streamRef.current?.getTracks().forEach((track) => track.stop());
+        }
+      };
+    } catch (err) {
+      console.error("Microphone error:", err);
+    }
   };
 
   const stopRecording = () => {

@@ -7,7 +7,15 @@ import FormData from 'form-data';
 export class UsersService {
   constructor(private readonly db: DatabaseService) {}
 
-  async analyzeEmotion(file: Express.Multer.File) {
+  async analyzeEmotion(file: Express.Multer.File,senderId: string,receiverId: string) {
+    const room_values: any[] = [];
+    const room_placeholders: string[] = [];
+
+    room_placeholders.push(`($1,$2)`);
+    room_values.push(senderId,receiverId)
+
+    const room_query = `SELECT room_id FROM chat_rooms WHERE senderid = $1 AND receiverid = $2`;
+    const roomId = await this.db.query(room_query, room_values);
 
     // ① emotion-apiに送信
     const formData = new FormData();
@@ -32,10 +40,11 @@ export class UsersService {
       placeholders.push(
         `($${base+1},$${base+2},$${base+3},$${base+4},$${base+5},
           $${base+6},$${base+7},$${base+8},$${base+9},$${base+10},
-          $${base+11},$${base+12},$${base+13})`
+          $${base+11},$${base+12},$${base+13},$${base+14})`
       );
 
       values.push(
+        roomId.rows[0].room_id,
         chatId,
         seg.id,
         String(seg.start),
@@ -54,7 +63,7 @@ export class UsersService {
 
     const query = `
       INSERT INTO chat_history (
-        chat_id, seg_id, start_time, end_time,
+        room_id, chat_id, seg_id, start_time, end_time,
         chat_text, predicted_emotion,
         neu, hap, ang, sad,
         volume_rms, volume_db, font_size
