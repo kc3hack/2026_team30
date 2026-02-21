@@ -46,6 +46,8 @@ h1 {
   white-space: pre-wrap;
   word-break: break-word;
   font-size: 15px;
+  /* 文字に枠線を追加 */
+  -webkit-text-stroke: 1px rgba(0, 0, 0, 0.5);
 }
 
 /* 自分メッセージ（右・緑） */
@@ -348,4 +350,12 @@ html, body, #root {
   background:#0f172a;
   color:white;
   outline:none;
+}
+
+.message-text {
+  text-shadow:
+    -1px -1px 0 #000,
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000;
 }
