@@ -1,61 +1,55 @@
-import json
 import matplotlib.pyplot as plt
+from collections import defaultdict
+from io import BytesIO
 
-# JSONデータ
-data = [
-  {
-    "start": 0.108,
-    "end": 25.796,
-    "emotion_scores": {
-      "neu": 0.21178871393203735,
-      "hap": 0.5746666789054871,
-      "ang": 0.2112058848142624,
-      "sad": 0.002338726306334138
-    }
-  },
-  {
-    "start": 27.605,
-    "end": 48.056,
-    "emotion_scores": {
-      "neu": 0.040954358875751495,
-      "hap": 0.6067790985107422,
-      "ang": 0.3511217534542084,
-      "sad": 0.0011448326986283064
-    }
-  }
-]
+def create_emotion_graph_bytes(json_data):
+    """
+    json_data: 感情分析結果のJSON（list形式）
+    return: PNG画像のバイトデータ
+    """
 
-# 中央時間を計算
-times = [(item["start"] + item["end"]) / 2 for item in data]
+    if not json_data:
+        raise ValueError("JSONデータが空です")
 
-neu = [item["emotion_scores"]["neu"] for item in data]
-hap = [item["emotion_scores"]["hap"] for item in data]
-ang = [item["emotion_scores"]["ang"] for item in data]
-sad = [item["emotion_scores"]["sad"] for item in data]
+    # speakerごとに分類
+    grouped = defaultdict(list)
+    for item in json_data:
+        grouped[item["speaker"]].append(item)
 
-plt.figure()
-plt.plot(times, neu, marker='o', label='Neutral')
-plt.plot(times, hap, marker='o', label='Happy')
-plt.plot(times, ang, marker='o', label='Angry')
-plt.plot(times, sad, marker='o', label='Sad')
+    speakers = list(grouped.keys())
+    num_speakers = len(speakers)
 
-plt.xlabel("Time (seconds)")
-plt.ylabel("Emotion Score")
-plt.title("Emotion Score Over Time")
-plt.legend()
-plt.show()
+    fig, axes = plt.subplots(num_speakers, 1, figsize=(8, 4 * num_speakers))
 
-data = [
-  {"id": 1, "volume_db": -24.121788024902344},
-  {"id": 2, "volume_db": -22.77745819091797}
-]
+    if num_speakers == 1:
+        axes = [axes]
 
-ids = [item["id"] for item in data]
-volume_db = [item["volume_db"] for item in data]
+    for ax, speaker in zip(axes, speakers):
+        items = grouped[speaker]
 
-plt.figure()
-plt.plot(ids, volume_db, marker='o')
-plt.xlabel("Segment ID")
-plt.ylabel("Volume (dB)")
-plt.title("Volume Change per Segment")
-plt.show()
+        times = [(i["start"] + i["end"]) / 2 for i in items]
+
+        neu = [i["emotion_scores"]["neu"] for i in items]
+        hap = [i["emotion_scores"]["hap"] for i in items]
+        ang = [i["emotion_scores"]["ang"] for i in items]
+        sad = [i["emotion_scores"]["sad"] for i in items]
+
+        ax.plot(times, neu, marker='o', label='Neutral')
+        ax.plot(times, hap, marker='o', label='Happy')
+        ax.plot(times, ang, marker='o', label='Angry')
+        ax.plot(times, sad, marker='o', label='Sad')
+
+        ax.set_title(f"Speaker {speaker}")
+        ax.set_xlabel("Time (seconds)")
+        ax.set_ylabel("Emotion Score")
+        ax.legend()
+
+    plt.tight_layout()
+
+    # メモリ上に保存
+    buffer = BytesIO()
+    fig.savefig(buffer, format="png")
+    plt.close(fig)
+
+    buffer.seek(0)
+    return buffer.getvalue()
