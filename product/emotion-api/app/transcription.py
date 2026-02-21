@@ -50,7 +50,6 @@ def transcribe_audio(file_path):
         )
 
         result = polling.json()
-        print("ポーリングレスポンス:", result)
 
         if result["status"] == "completed":
 
