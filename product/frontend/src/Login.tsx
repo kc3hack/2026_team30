@@ -33,8 +33,8 @@ function Login() {
 
       if (data.success) {
         // 認証成功なら保存
-        localStorage.setItem("userName", name);
-        localStorage.setItem("userPassword", pass);
+        localStorage.removeItem("userId");
+        localStorage.setItem("userId", data.userId);
 
         navigate("/Home");
       } else {

@@ -5,18 +5,18 @@ import { DatabaseService } from "./database/database.service";
 export class ChatService {
     constructor(private readonly db:DatabaseService){}
 
-    //=======================
-    //データベースから履歴取得
-    //=======================
-    async getRoomHistory(roomId:number){
+    async getRoomHistory(senderId: string, receiverId: string) {
         const result = await this.db.query(
             `
-            SELECT chat_text, font_size, font_color, created_at
+            SELECT chat_history.chat_text AS text, chat_history.created_at AS time,
+            chat_history.font_color AS color, chat_history.font_size AS size,
+            CASE WHEN chat_rooms.senderid = $1 THEN 'me' ELSE 'other' END AS sender
             FROM chat_history
-            WHERE room_id = $1
-            ORDER BY created_at ASC
+            JOIN chat_rooms ON chat_history.room_id = chat_rooms.room_id
+            WHERE (senderid = $1 AND receiverid = $2) OR (senderid = $2 AND receiverid = $1)
+            ORDER BY chat_history.created_at ASC
             `,
-            [roomId]
+            [senderId, receiverId]
         );
 
         return result.rows;

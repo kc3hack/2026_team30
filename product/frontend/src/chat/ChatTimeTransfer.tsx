@@ -6,14 +6,14 @@ import type { ChatMessageResponseAPI, Message } from "./types";
 
 // API レスポンス (YYYY-MM-DD HH:MM:SS.ffffff形式) を UI 用に変換
 export function convertApiMessagesToUIMessages(
-  apiMessages: ChatMessageResponseAPI[]
+  apiMessages: Message[]
 ): Message[] {
   return apiMessages.map((apiMsg) => ({
     text: apiMsg.text,
-    time: formatTime(apiMsg.createAt),
-    color: apiMsg.textColor,
-    size: apiMsg.textSize,
-    sender: "other",
+    time: formatTime(apiMsg.time),
+    color: apiMsg.color,
+    size: apiMsg.size,
+    sender: apiMsg.sender,
   }));
 }
 

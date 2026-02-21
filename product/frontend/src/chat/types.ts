@@ -8,9 +8,9 @@ export type Message = {
 };
 
 export type ChatMessageResponseAPI = {
-  id:number;
+  id:string;
   senderId:string;
-  receicerId:string;
+  receiverId:string;
   text:string;
   textColor:string;
   textSize:string;

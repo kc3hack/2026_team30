@@ -3,7 +3,7 @@
 //=============================
 
 import axios from "axios";
-import type { ChatMessageResponseAPI } from "./types";
+import type { ChatMessageResponseAPI, Message } from "./types";
 
 const API_URL = ""
 
@@ -14,9 +14,9 @@ export const sendTextMessage = async (
     text:string,
     textColor:string,
     textSize:number
-):Promise<ChatMessageResponseAPI | null> => {
+):Promise<Message | null> => {
     try{
-        const res = await axios.post<ChatMessageResponseAPI>(API_URL,{
+        const res = await axios.post<Message>(API_URL,{
         senderId,
         receiverId,
         text,
