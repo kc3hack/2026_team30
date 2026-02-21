@@ -6,26 +6,26 @@ function Login() {
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
-  const [room, setRoom] = useState("");
+  const [pass, setPass] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!name || !room) {
-      alert("名前とルーム名を入力して");
+    if (!name || !pass) {
+      alert("名前とパスワードを入力して");
       return;
     }
 
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3000/auth/login", {
+      const response = await fetch("http://localhost:3001/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name: name,
-          room: room,
+          password: pass,
         }),
       });
 
@@ -34,7 +34,7 @@ function Login() {
       if (data.success) {
         // 認証成功なら保存
         localStorage.setItem("userName", name);
-        localStorage.setItem("roomName", room);
+        localStorage.setItem("userPassword", pass);
 
         navigate("/Home");
       } else {
@@ -64,8 +64,8 @@ function Login() {
         <input
           type="password"
           placeholder="パスワード"
-          value={room}
-          onChange={(e) => setRoom(e.target.value)}
+          value={pass}
+          onChange={(e) => setPass(e.target.value)}
         />
 
         <button onClick={handleLogin} disabled={loading}>
