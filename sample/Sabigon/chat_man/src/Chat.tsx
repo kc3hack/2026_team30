@@ -86,14 +86,8 @@ function Chat() {
     <div className="chat-container">
       <h1>チャット</h1>
 
-      {/* =============================
-          チャット表示
-      ============================= */}
       <ChatMessages messages={messages} />
 
-      {/* =============================
-          入力エリア
-      ============================= */}
       <div className="input-area">
         <ChatStyleControls
           color={color}
@@ -109,6 +103,7 @@ function Chat() {
           onSend={sendMessage}
         />
 
+        {/* 🔥 ここは変更なし */}
         <ChatRecorder onRecorded={handleRecordedAudio} />
       </div>
 

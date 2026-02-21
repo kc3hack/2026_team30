@@ -2,6 +2,11 @@ import { Controller,Get, Post, UploadedFile, UseInterceptors } from '@nestjs/com
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Body } from '@nestjs/common';
 import { UsersService } from './users.service';
+type Friend = {
+  id: string;
+  name: string;
+  avatar: string;
+};
 
 @Controller('users')
 export class UsersController {
@@ -21,6 +26,13 @@ async analyzeEmotion(
   );
   return result;
 }
+ @Post('friends')
+  async getFriends(@Body() body: { name: string }): Promise<Friend[]> {
+
+    console.log("受け取ったユーザー:", body.name);
+
+    return this.usersService.getFriends(body.name);
+  }
 
   @Get('test-insert')
     async testInsert() {
