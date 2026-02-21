@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "./App.css";
 
+// 議事録・文字起こし画面
 function Minutes() {
   const navigate = useNavigate();
   const [text, setText] = useState("");
@@ -22,7 +23,7 @@ function Minutes() {
         onChange={(e) => setText(e.target.value)}
       />
 
-      <button onClick={() => navigate("/")}>←ホーム戻る</button>
+      <button onClick={() => navigate("/Home")}>←ホーム戻る</button>
     </div>
   );
 }
