@@ -40,20 +40,20 @@ function Chat() {
     loadMessages();
   }, [receiverId]);
 
-  //======================
-  //履歴再取得
-  //======================
+  // ======================
+  // 履歴再取得
+  // ======================
   const reloadMessages = async () => {
-    if(!receiverId) return;
+    if (!receiverId) return;
 
     const apiMessages = await fetchMessages(receiverId);
-    if(!apiMessages) return;
+    if (!apiMessages) return;
 
     const uiMessages =
       convertApiMessagesToUIMessages(apiMessages);
 
     setMessages(uiMessages);
-  }
+  };
 
   const sendMessage = async () => {
     if (!input.trim() || !receiverId || !myUserId) return;
@@ -68,26 +68,22 @@ function Chat() {
 
     if (!response) return;
 
-    const uiMessages =
-      convertApiMessagesToUIMessages([response]);
-
-    setMessages((prev) => [...prev, ...uiMessages]);
     setInput("");
 
-    //履歴再取得で自分の送ったメッセージを反映
+    // ✅ 送信後は履歴再取得だけにする（重複防止）
     await reloadMessages();
   };
 
   const handleAudioRecorded = async (
-    audioUrl:string,
-    time:string,
-    result:any
+    audioUrl: string,
+    time: string,
+    result: any
   ) => {
-    console.log("Audio sent",result);
+    console.log("Audio sent:", result);
 
-    //履歴再取得
+    // ✅ 音声送信後に履歴再取得
     await reloadMessages();
-  }
+  };
 
   const handleKeyDown = (
     e: KeyboardEvent<HTMLInputElement>
@@ -119,7 +115,13 @@ function Chat() {
           onSend={sendMessage}
         />
 
-        <ChatRecorder onRecorded={handleAudioRecorded}/>
+        {myUserId && receiverId && (
+          <ChatRecorder
+            senderId={myUserId}
+            receiverId={receiverId}
+            onRecorded={handleAudioRecorded}
+          />
+        )}
       </div>
 
       <button onClick={() => navigate("/Home")}>←戻る</button>
