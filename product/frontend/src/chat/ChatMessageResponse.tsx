@@ -8,8 +8,10 @@ import type { ChatMessageResponseAPI, Message } from "./types";
 //APIからの返答をもらうURL
 
     //メッセージを取ってくる
-    export const fetchMessages = async () => {
+    export const fetchMessages = async (receiverId: string) => {
         try{
+            const senderId = localStorage.getItem("userId");
+            if(!senderId) throw new Error("ログイン情報がありません");
             //URLを指定
             const response = await fetch("http://localhost:3001/chat/room", {
         method: "POST",
@@ -17,8 +19,8 @@ import type { ChatMessageResponseAPI, Message } from "./types";
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            senderId: "user1",
-            receiverId: "user2"
+            senderId: senderId,
+            receiverId: receiverId
         }),
       });
             return await response.json() as Message[];

@@ -17,7 +17,7 @@ export class AuthService {
     if (result.rows.length === 0) {
         return { success: false, message: 'Invalid credentials' };
     } else {
-        return { success: true, message: 'Login successful', user: result.rows[0] };
+        return { success: true, message: 'Login successful', userId: result.rows[0].userid };
     }
   }
 }

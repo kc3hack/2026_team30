@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import type { KeyboardEvent } from "react";
 import "./Chat.css";
-import { useNavigate } from "react-router-dom";
 import ChatMessages from "./chat/ChatMessages";
 import ChatStyleControls from "./chat/ChatStyleControls";
 import ChatTextInput from "./chat/ChatTextInput";
@@ -11,89 +11,70 @@ import { fetchMessages } from "./chat/ChatMessageResponse";
 import { convertApiMessagesToUIMessages } from "./chat/ChatTimeTransfer";
 import { sendTextMessage } from "./chat/ChatSendTextMessage";
 
-
-
 function Chat() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const receiverId = location.state?.receiverId;
+  const myUserId = localStorage.getItem("userId");
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
 
-  // ===== 文字設定 =====
   const [color, setColor] = useState("#000000");
   const [size, setSize] = useState("16");
 
-  const myUserId = "1";
-  const recieverId = "2";
-
-  //=======================
-  //初回ロード時に履歴取得
-  //=======================
   useEffect(() => {
     const loadMessages = async () => {
-      const apiMessages = await fetchMessages();
-      if(!apiMessages) return;
+      if (!receiverId) return;
 
-      const uiMessages = convertApiMessagesToUIMessages(
-      apiMessages
-    );
-    
+      const apiMessages = await fetchMessages(receiverId);
+      if (!apiMessages) return;
+
+      const uiMessages =
+        convertApiMessagesToUIMessages(apiMessages);
+
       setMessages(uiMessages);
     };
 
     loadMessages();
-  },[]);
+  }, [receiverId]);
 
-  // =============================
-  // テキスト送信
-  // =============================
   const sendMessage = async () => {
-    if (input.trim() === "") return;
+    if (!input.trim() || !receiverId || !myUserId) return;
 
     const response = await sendTextMessage(
       myUserId,
-      recieverId,
+      receiverId,
       input,
       color,
       Number(size)
     );
 
-    if(!response)return;
+    if (!response) return;
 
-    const uiMessages = convertApiMessagesToUIMessages([response]);
+    const uiMessages =
+      convertApiMessagesToUIMessages([response]);
 
     setMessages((prev) => [...prev, ...uiMessages]);
     setInput("");
   };
 
-
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (
+    e: KeyboardEvent<HTMLInputElement>
+  ) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
   };
 
-  const handleRecordedAudio = async (
-    audioUrl:string,
-    time:string
-  ) => {
-    //audio送信のAPI処理
-  }
-
   return (
     <div className="chat-container">
       <h1>チャット</h1>
 
-      {/* =============================
-          チャット表示
-      ============================= */}
       <ChatMessages messages={messages} />
 
-      {/* =============================
-          入力エリア
-      ============================= */}
       <div className="input-area">
         <ChatStyleControls
           color={color}
@@ -109,7 +90,7 @@ function Chat() {
           onSend={sendMessage}
         />
 
-        <ChatRecorder onRecorded={handleRecordedAudio} />
+        <ChatRecorder onRecorded={() => {}} />
       </div>
 
       <button onClick={() => navigate("/Home")}>←戻る</button>
