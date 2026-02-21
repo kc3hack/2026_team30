@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { KeyboardEvent } from "react";
 import "./Chat.css";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,11 @@ import ChatStyleControls from "./chat/ChatStyleControls";
 import ChatTextInput from "./chat/ChatTextInput";
 import ChatRecorder from "./chat/ChatRecorder";
 import type { Message } from "./chat/types";
+import { fetchMessages } from "./chat/ChatMessageResponse";
+import { convertApiMessagesToUIMessages } from "./chat/ChatTimeTransfer";
+import { sendTextMessage } from "./chat/ChatSendTextMessage";
+
+
 
 function Chat() {
   const navigate = useNavigate();
@@ -18,66 +23,64 @@ function Chat() {
   const [color, setColor] = useState("#000000");
   const [size, setSize] = useState("16");
 
+  const myUserId = "1";
+  const recieverId = "2";
+
+  //=======================
+  //初回ロード時に履歴取得
+  //=======================
+  useEffect(() => {
+    const loadMessages = async () => {
+      const apiMessages = await fetchMessages();
+      if(!apiMessages) return;
+
+      const uiMessages = convertApiMessagesToUIMessages(
+      apiMessages
+    );
+    
+      setMessages(uiMessages);
+    };
+
+    loadMessages();
+  },[]);
+
   // =============================
-  // ① テキスト送信
+  // テキスト送信
   // =============================
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (input.trim() === "") return;
 
-    const now = new Date();
-    const time =
-      now.getHours().toString().padStart(2, "0") +
-      ":" +
-      now.getMinutes().toString().padStart(2, "0");
+    const response = await sendTextMessage(
+      myUserId,
+      recieverId,
+      input,
+      color,
+      Number(size)
+    );
 
-    // ===== 自分のメッセージ =====
-    const newMessage: Message = {
-      text: input,
-      time: time,
-      color: color,
-      size: size,
-      sender: "me",
-    };
+    if(!response)return;
 
-    setMessages((prev) => [...prev, newMessage]);
+    const uiMessages = convertApiMessagesToUIMessages([response]);
 
-    const sentText = input;   // ←内容保存
-    const sentColor = color;  // ←色保存
-    const sentSize = size;    // ←サイズ保存
+    setMessages((prev) => [...prev, ...uiMessages]);
     setInput("");
-
-    // =============================
-    // ② 相手の自動返信（デモ）
-    // 自分と同じ色・サイズで返す
-    // =============================
-    setTimeout(() => {
-      const reply: Message = {
-        text: sentText + "（自動返信）", // 同じ内容
-        time: time,
-        color: sentColor, // ←色コピー
-        size: sentSize,   // ←サイズコピー
-        sender: "other",
-      };
-
-      setMessages((prev) => [...prev, reply]);
-    }, 800);
   };
 
-  // Enter送信
-  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "Enter") sendMessage();
+
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
   };
 
-  // 録音完了時のメッセージ追加
-  const handleRecordedAudio = (audioUrl: string, time: string) => {
-    const newMessage: Message = {
-      audio: audioUrl,
-      time: time,
-      sender: "me",
-    };
-
-    setMessages((prev) => [...prev, newMessage]);
-  };
+  const handleRecordedAudio = async (
+    audioUrl:string,
+    time:string
+  ) => {
+    //audio送信のAPI処理
+  }
 
   return (
     <div className="chat-container">
@@ -106,19 +109,7 @@ function Chat() {
           onSend={sendMessage}
         />
 
-        <ChatRecorder
-  onRecorded={(audioUrl, time, result) => {
-    setMessages((prev) => [
-      ...prev,
-      {
-        audio: audioUrl,
-        time,
-        emotion: result.emotion,
-        score: result.score,
-      },
-    ]);
-  }}
-/>
+        <ChatRecorder onRecorded={handleRecordedAudio} />
       </div>
 
       <button onClick={() => navigate("/Home")}>←戻る</button>
