@@ -125,14 +125,7 @@ button:hover {
     padding: 12px 16px;
   }
 
-  .home {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: #1e1e1e;
-  color: white;
+  
 }
 
 .menu {
@@ -156,15 +149,3 @@ html, body, #root {
   margin: 0;
 }
 
-.home {
-  height: 100vh;        /* 画面全体 */
-  width: 100vw;
-  display: flex;
-  justify-content: center;  /* 横中央 */
-  align-items: center;      /* 縦中央 */
-  background: #1e1f22;      /* discord風 */
-  color: white;
-}
-
-
-}
