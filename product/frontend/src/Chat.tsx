@@ -106,7 +106,19 @@ function Chat() {
           onSend={sendMessage}
         />
 
-        <ChatRecorder onRecorded={handleRecordedAudio} />
+        <ChatRecorder
+  onRecorded={(audioUrl, time, result) => {
+    setMessages((prev) => [
+      ...prev,
+      {
+        audio: audioUrl,
+        time,
+        emotion: result.emotion,
+        score: result.score,
+      },
+    ]);
+  }}
+/>
       </div>
 
       <button onClick={() => navigate("/Home")}>←戻る</button>
