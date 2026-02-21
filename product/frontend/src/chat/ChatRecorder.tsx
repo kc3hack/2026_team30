@@ -46,6 +46,8 @@ function ChatRecorder({ onRecorded }: ChatRecorderProps) {
           // ===== バックエンド送信 =====
           const formData = new FormData();
           formData.append("file", blob, "recording.webm");
+          formData.append("senderId", "user1");
+          formData.append("receiverId", "user2");
 
           const response = await fetch(
             "http://localhost:3001/users/analyze",
