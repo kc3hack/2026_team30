@@ -10,7 +10,12 @@ function Minutes() {
 
     return (
       <div className="chat-container">
+
         <h1>議事録・文字起こし</h1>
+
+        <MinutesUpload 
+          onResult={setText}
+        />
 
         <textarea
           style={{
@@ -23,8 +28,6 @@ function Minutes() {
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
-
-        <MinutesUpload/>
 
         <button onClick={() => navigate("/Home")}>←ホーム戻る</button>
       </div>

@@ -3,10 +3,12 @@
 //===================================
 import { useState } from "react";
 
-interface MinutesUploadProps{
-}
+type Props = {
+    onResult:(text:string) => void;
+};
 
-function MinutesUpload({}:MinutesUploadProps){
+
+function MinutesUpload({onResult}:Props){
     const [file, setFile] = useState<File | null>(null);
 
     const handleUpload = async () => {
@@ -22,6 +24,9 @@ function MinutesUpload({}:MinutesUploadProps){
             });
 
             const result = await response.json();
+
+            onResult(result.text);
+
             console.log("アップロード成功:",result);
         }catch(error){
             console.error("アップロード失敗:",error);
