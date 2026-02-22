@@ -1,7 +1,7 @@
 # EmotionChat
 <!-- プロダクト名に変更してください -->
 
-![EmotionChat](https://kc3.me/cms/wp-content/uploads/2026/02/444e7120d5cdd74aa75f7a94bf8821a5-scaled.png)
+<img width="1911" height="381" alt="image" src="https://github.com/user-attachments/assets/9db63dc8-1b82-4dcd-b6cc-1c5ee7940f32" />
 <!-- プロダクト名・イメージ画像を差し変えてください -->
 
 
@@ -32,9 +32,27 @@ CodeFlow
 
 
 ## 操作説明・デモ動画
-[デモ動画はこちら](https://www.youtube.com/watch?v=fbzGp0XJGq8)
-<!-- 開発したプロダクトの操作説明について入力してください。また、操作説明デモ動画があれば、埋め込みやリンクを記載してください -->
 
+<!-- 開発したプロダクトの操作説明について入力してください。また、操作説明デモ動画があれば、埋め込みやリンクを記載してください -->
+### ログイン機能
+1. ログイン
+<img width="527" height="489" alt="image" src="https://github.com/user-attachments/assets/0012f391-e173-4798-b488-2ca04b8faac2" />
+
+
+### チャット機能
+1. チャットを行うuserを選択
+<img width="1904" height="366" alt="image" src="https://github.com/user-attachments/assets/e7e91218-d081-495a-950e-6666a575f9ba" />
+
+2. 手入力や音声入力でチャット送信
+<img width="1917" height="995" alt="image" src="https://github.com/user-attachments/assets/14dc667c-ce54-42ed-82d2-2c2b82070bc8" />
+
+
+### 議事録作成機能
+1. 議事録選択、ファイルをアップロード
+<img width="636" height="997" alt="image" src="https://github.com/user-attachments/assets/868a70f7-1823-46bd-ba96-7176773092dc" />
+
+2. 分析結果と議事録生成
+<img width="633" height="999" alt="image" src="https://github.com/user-attachments/assets/49c997e3-f2ca-41e3-855b-c36762019c7f" />
 
 ## 注力したポイント
 
