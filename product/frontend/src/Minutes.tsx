@@ -54,8 +54,27 @@ setText(data.text); // 文字起こし
 
       <button onClick={handleUpload}>解析する</button>
 
-      {/* 🔥 画像表示 */}
-      {image && <img src={image} alt="Emotion Graph" />}
+      {/* 🔥 画像表示（レスポンシブ対応） */}
+      {image && (
+          <div
+          style={{
+            width: "100%",
+            maxWidth: "1000px",
+            margin: "20px auto",
+          }}
+        >
+          <img
+            src={image}
+            alt="Emotion Graph"
+            style={{
+              width: "100%",
+              height: "auto",
+              display: "block",
+              borderRadius: "8px",
+            }}
+          />
+        </div>
+      )}
 
       <textarea
         style={{
