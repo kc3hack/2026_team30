@@ -46,7 +46,7 @@ docker compose down
 
 起動後、各サービスは以下のポートでアクセス可能です（デフォルト設定）：
 - フロントエンド: http://localhost:5173
-- バックエンド: http://localhost:3000
+- バックエンド: http://localhost:3001
 - 感情解析API: http://localhost:8000
 
 （注）ポートは `docker-compose.yml` の公開設定に依存します。必要に応じてファイルを確認してください。
